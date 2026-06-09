@@ -6,14 +6,50 @@
 
 
 namespace input_reader {
-    std::string_view Trim(std::string_view str) {
-        auto start = str.find_first_not_of(" \t\r\n");
-        if (start == str.npos) {
-            return "";
+    namespace {
+        std::string_view Trim(std::string_view str) {
+            auto start = str.find_first_not_of(" \t\r\n");
+            if (start == str.npos) {
+                return "";
+            }
+            auto end = str.find_last_not_of(" \t\r\n");
+            return str.substr(start, end - start + 1);
         }
-        auto end = str.find_last_not_of(" \t\r\n");
-        return str.substr(start, end - start + 1);
+
+        void ParseAndSetDistances(transport_catalogue::TransportCatalogue& catalogue, std::string_view stop_name, std::string_view description) {
+            size_t first_comma = description.find(',');
+            if (first_comma == std::string_view::npos) return;
+
+            size_t second_comma = description.find(',', first_comma + 1);
+            if (second_comma == std::string_view::npos) return;
+
+            std::string_view distances_str = description.substr(second_comma + 1);
+
+            while (!distances_str.empty()) {
+                size_t comma_pos = distances_str.find(',');
+                std::string_view chunk = distances_str.substr(0, comma_pos);
+
+                size_t m_pos = chunk.find("m to ");
+                if (m_pos != std::string_view::npos) {
+                    std::string_view dist_str = Trim(chunk.substr(0, m_pos));
+                    std::string_view target_name = Trim(chunk.substr(m_pos + 5));
+
+                    int distance = std::stoi(std::string(dist_str));
+                    const auto* from = catalogue.getStop(stop_name);
+                    const auto* to = catalogue.getStop(target_name);
+
+                    if (from && to) {
+                        catalogue.SetDistance(from, to, distance);
+                    }
+                }
+                if (comma_pos == std::string_view::npos) {
+                    break;
+                }
+                distances_str.remove_prefix(comma_pos + 1);
+            }
+        }
     }
+
 
 
     std::vector<std::string_view> Split(std::string_view str, char delimiter) {
@@ -77,22 +113,31 @@ namespace input_reader {
                 continue;
             }
 
-            size_t comma_pos = cmd.description.find(',');
-            if (comma_pos != std::string::npos) {
+            size_t first_comma = cmd.description.find(',');
+            if (first_comma != std::string::npos) {
 
-                double lat = std::stod(cmd.description.substr(0, comma_pos));
-                double lng = std::stod(cmd.description.substr(comma_pos + 1));
+                double lat = std::stod(cmd.description.substr(0, first_comma));
 
+                size_t second_comma = cmd.description.find(',', first_comma + 1);
+                std::string lon_str = (second_comma != std::string::npos)
+                    ? cmd.description.substr(first_comma + 1, second_comma - first_comma - 1)
+                    : cmd.description.substr(first_comma + 1);
+
+                double lng = std::stod(lon_str);
 
                 catalogue.addStop(cmd.id, { lat, lng });
             }
         }
 
+        for (const auto& cmd : commands_) {
+            if (!cmd || cmd.command != "Stop") continue;
+
+            ParseAndSetDistances(catalogue, cmd.id, cmd.description);
+        }
+
 
         for (const auto& cmd : commands_) {
-            if (!cmd || cmd.command != "Bus") {
-                continue;
-            }
+            if (!cmd || cmd.command != "Bus") continue;
 
             bool is_circle = (cmd.description.find('>') != std::string::npos);
 
@@ -101,4 +146,6 @@ namespace input_reader {
             catalogue.addBus(cmd.id, route_stops, is_circle);
         }
     }
+
 }
+

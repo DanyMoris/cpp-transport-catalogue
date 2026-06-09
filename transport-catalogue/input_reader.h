@@ -23,6 +23,7 @@ namespace input_reader {
 
     class InputReader {
     public:
+        /* Parse string into structure and save in result in commands_ */
         void ParseLine(std::string_view line);
 
         void ApplyCommands(transport_catalogue::TransportCatalogue& catalogue) const;

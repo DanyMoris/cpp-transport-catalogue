@@ -24,7 +24,8 @@ namespace stat_reader {
             output << "Bus " << name << ": "
                 << info.total_stops << " stops on route, "
                 << info.unique_stops << " unique stops, "
-                << std::setprecision(6) << info.route_length << " route length\n";
+                << info.route_length << " route length, "
+                << std::setprecision(6) << info.curvature << " curvature\n";
         }
     }
 
@@ -70,4 +71,4 @@ namespace stat_reader {
         }
     }
 
-} // namespace stat_reader
+}

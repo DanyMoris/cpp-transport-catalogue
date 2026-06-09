@@ -64,9 +64,19 @@ namespace transport_catalogue {
         std::unordered_set<const Stop*> unique_stops(bus->route.begin(), bus->route.end());
         info.unique_stops = unique_stops.size();
 
+        double geo_length = 0.0;
+        int road_length = 0;
+
         for (size_t i = 0; i + 1 < bus->route.size(); ++i) {
-            info.route_length += ComputeDistance(bus->route[i]->coordinates, bus->route[i + 1]->coordinates);
+            const Stop* from = bus->route[i];
+            const Stop* to = bus->route[i + 1];
+
+            geo_length += ComputeDistance(from->coordinates, to->coordinates);
+            road_length += GetDistance(from, to);
         }
+
+        info.route_length = road_length;
+        info.curvature = road_length / geo_length;
 
         return info;
     }
@@ -80,6 +90,20 @@ namespace transport_catalogue {
         }
 
         return empty_buses;
+    }
+
+    void TransportCatalogue::SetDistance(const Stop* from, const Stop* to, int distance) {
+        distances_[{from, to}] = distance;
+    }
+
+    int TransportCatalogue::GetDistance(const Stop* from, const Stop* to) const {
+        if (distances_.count({ from, to })) {
+            return distances_.at({ from, to });
+        }
+        if (distances_.count({ to, from })) {
+            return distances_.at({ to, from });
+        }
+        return 0;
     }
 
 }
