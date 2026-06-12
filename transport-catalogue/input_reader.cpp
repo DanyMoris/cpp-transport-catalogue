@@ -48,9 +48,24 @@ namespace input_reader {
                 distances_str.remove_prefix(comma_pos + 1);
             }
         }
+
+        std::pair<double, double> ParseCoordinates(const CommandDescription& cmd) {
+            size_t first_comma = cmd.description.find(',');
+            if (first_comma != std::string::npos) {
+                double lat = std::stod(cmd.description.substr(0, first_comma));
+
+                size_t second_comma = cmd.description.find(',', first_comma + 1);
+                std::string lon_str = (second_comma != std::string::npos)
+                    ? cmd.description.substr(first_comma + 1, second_comma - first_comma - 1)
+                    : cmd.description.substr(first_comma + 1);
+
+                double lng = std::stod(lon_str);
+
+                return { lat, lng };
+            }
+            return {};
+        }
     }
-
-
 
     std::vector<std::string_view> Split(std::string_view str, char delimiter) {
         std::vector<std::string_view> result;
@@ -113,21 +128,13 @@ namespace input_reader {
                 continue;
             }
 
-            size_t first_comma = cmd.description.find(',');
-            if (first_comma != std::string::npos) {
+            auto pair = ParseCoordinates(cmd);
+            double lat = pair.first;
+            double lng = pair.second;
 
-                double lat = std::stod(cmd.description.substr(0, first_comma));
-
-                size_t second_comma = cmd.description.find(',', first_comma + 1);
-                std::string lon_str = (second_comma != std::string::npos)
-                    ? cmd.description.substr(first_comma + 1, second_comma - first_comma - 1)
-                    : cmd.description.substr(first_comma + 1);
-
-                double lng = std::stod(lon_str);
-
-                catalogue.addStop(cmd.id, { lat, lng });
-            }
+            catalogue.addStop(cmd.id, { lat, lng });
         }
+
 
         for (const auto& cmd : commands_) {
             if (!cmd || cmd.command != "Stop") continue;
@@ -146,6 +153,5 @@ namespace input_reader {
             catalogue.addBus(cmd.id, route_stops, is_circle);
         }
     }
-
 }
 

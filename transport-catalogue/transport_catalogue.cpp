@@ -93,15 +93,18 @@ namespace transport_catalogue {
     }
 
     void TransportCatalogue::SetDistance(const Stop* from, const Stop* to, int distance) {
-        distances_[{from, to}] = distance;
+        if (from && to) {
+            distances_[{from, to}] = distance;
+        }
     }
 
     int TransportCatalogue::GetDistance(const Stop* from, const Stop* to) const {
-        if (distances_.count({ from, to })) {
-            return distances_.at({ from, to });
+
+        if (auto it = distances_.find({ from, to }); it != distances_.end()) {
+            return it->second;
         }
-        if (distances_.count({ to, from })) {
-            return distances_.at({ to, from });
+        if (auto it = distances_.find({ to, from }); it != distances_.end()) {
+            return it->second;
         }
         return 0;
     }
