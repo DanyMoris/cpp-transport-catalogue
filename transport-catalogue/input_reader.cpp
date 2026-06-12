@@ -49,7 +49,7 @@ namespace input_reader {
             }
         }
 
-        std::pair<double, double> ParseCoordinates(const CommandDescription& cmd) {
+        Coordinates ParseCoordinates(const CommandDescription& cmd) {
             size_t first_comma = cmd.description.find(',');
             if (first_comma != std::string::npos) {
                 double lat = std::stod(cmd.description.substr(0, first_comma));
@@ -128,11 +128,7 @@ namespace input_reader {
                 continue;
             }
 
-            auto pair = ParseCoordinates(cmd);
-            double lat = pair.first;
-            double lng = pair.second;
-
-            catalogue.addStop(cmd.id, { lat, lng });
+            catalogue.addStop(cmd.id, ParseCoordinates(cmd));
         }
 
 
