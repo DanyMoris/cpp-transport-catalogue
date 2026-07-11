@@ -3,29 +3,12 @@
 #include <unordered_set>
 
 namespace transport_catalogue {
-    std::vector<const domain::Bus*> TransportCatalogue::getBuses() const {
-        std::vector<const domain::Bus*> result;
-        result.reserve(routes_.size());
-
-        for (const auto& bus : routes_) {
-            result.push_back(&bus);
-        }
-
-        return result;
+    const std::deque<domain::Bus>& TransportCatalogue::getBuses() const {
+        return routes_;
     }
 
-    std::vector<const domain::Stop*> TransportCatalogue::getStops() const {
-        std::vector<const domain::Stop*> result;
-        result.reserve(stations_.size());
-
-        for (const auto& stop : stations_) {
-            auto it = stop_to_buses_.find(stop.name);
-            if (it != stop_to_buses_.end() && !it->second.empty()) {
-                result.push_back(&stop);
-            }
-        }
-
-        return result;
+    const std::deque<domain::Stop>& TransportCatalogue::getStops() const {
+        return stations_;
     }
 
     void TransportCatalogue::addStop(std::string_view name, geo::Coordinates coordinates) {
@@ -120,7 +103,7 @@ namespace transport_catalogue {
         return info;
     }
 
-    const std::unordered_set<std::string_view>* TransportCatalogue::getStopInfo(std::string_view stop_name) const {
+    const std::unordered_set<std::string_view>* TransportCatalogue::getBusesByStop(std::string_view stop_name) const {
         auto it = stop_to_buses_.find(stop_name);
         if (it == stop_to_buses_.end()) {
             return nullptr;

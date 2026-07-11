@@ -36,19 +36,11 @@ namespace json {
         }
     };
 
-    class Node {
+    class Node final : public std::variant<std::nullptr_t, Array, Dict, bool, int, double, std::string> {
     public:
-        // Порядок типов строго регламентирован. nullptr_t на первом месте задает дефолтное состояние
-        using Value = std::variant<std::nullptr_t, Array, Dict, bool, int, double, std::string>;
+        using variant::variant;
+        using Value = variant;
 
-        Node() = default;
-        Node(std::nullptr_t);
-        Node(int value);
-        Node(double value);
-        Node(std::string value);
-        Node(bool value);
-        Node(Array array);
-        Node(Dict map);
 
         bool IsInt() const;
         bool IsDouble() const;
@@ -66,10 +58,7 @@ namespace json {
         const Array& AsArray() const;
         const Dict& AsMap() const;
 
-        const Value& GetValue() const { return value_; }
-
-    private:
-        Value value_;
+        const Value& GetValue() const { return *this; }
     };
 
     bool operator==(const Node& lhs, const Node& rhs);

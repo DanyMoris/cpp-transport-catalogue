@@ -302,53 +302,45 @@ namespace json {
 
     }  // namespace
 
-    // Реализация методов класса Node
-    Node::Node(nullptr_t) : value_(nullptr) {}
-    Node::Node(int value) : value_(value) {}
-    Node::Node(double value) : value_(value) {}
-    Node::Node(string value) : value_(move(value)) {}
-    Node::Node(bool value) : value_(value) {}
-    Node::Node(Array array) : value_(move(array)) {}
-    Node::Node(Dict map) : value_(move(map)) {}
 
-    bool Node::IsInt() const { return holds_alternative<int>(value_); }
-    bool Node::IsDouble() const { return holds_alternative<int>(value_) || holds_alternative<double>(value_); }
-    bool Node::IsPureDouble() const { return holds_alternative<double>(value_); }
-    bool Node::IsBool() const { return holds_alternative<bool>(value_); }
-    bool Node::IsString() const { return holds_alternative<string>(value_); }
-    bool Node::IsNull() const { return holds_alternative<nullptr_t>(value_); }
-    bool Node::IsArray() const { return holds_alternative<Array>(value_); }
-    bool Node::IsMap() const { return holds_alternative<Dict>(value_); }
+    bool Node::IsInt() const { return holds_alternative<int>(*this); }
+    bool Node::IsDouble() const { return holds_alternative<int>(*this) || holds_alternative<double>(*this); }
+    bool Node::IsPureDouble() const { return holds_alternative<double>(*this); }
+    bool Node::IsBool() const { return holds_alternative<bool>(*this); }
+    bool Node::IsString() const { return holds_alternative<string>(*this); }
+    bool Node::IsNull() const { return holds_alternative<nullptr_t>(*this); }
+    bool Node::IsArray() const { return holds_alternative<Array>(*this); }
+    bool Node::IsMap() const { return holds_alternative<Dict>(*this); }
 
     int Node::AsInt() const {
         if (!IsInt()) throw logic_error("Node is not an int");
-        return get<int>(value_);
+        return get<int>(*this);
     }
     bool Node::AsBool() const {
         if (!IsBool()) throw logic_error("Node is not a bool");
-        return get<bool>(value_);
+        return get<bool>(*this);
     }
     double Node::AsDouble() const {
         if (IsInt()) {
             return static_cast<double>(AsInt());
         }
         else if (IsDouble()) {
-            return get<double>(value_);
+            return get<double>(*this);
         }
         throw logic_error("Not a number");
 
     }
     const string& Node::AsString() const {
         if (!IsString()) throw logic_error("Node is not a string");
-        return get<string>(value_);
+        return get<string>(*this);
     }
     const Array& Node::AsArray() const {
         if (!IsArray()) throw logic_error("Node is not an array");
-        return get<Array>(value_);
+        return get<Array>(*this);
     }
     const Dict& Node::AsMap() const {
         if (!IsMap()) throw logic_error("Node is not a map");
-        return get<Dict>(value_);
+        return get<Dict>(*this);
     }
 
     bool operator==(const Node& lhs, const Node& rhs) { return lhs.GetValue() == rhs.GetValue(); }
