@@ -25,7 +25,7 @@ private:
     void ParseRoadDistances(const json::Array& base_requests, transport_catalogue::TransportCatalogue& catalogue) const;
     void ParseBus(const json::Array& base_requests, transport_catalogue::TransportCatalogue& catalogue) const;
 
-    void FillResponseOnBus(json::Dict& response, const json::Dict& map, const RequestHandler& handler) const;
-    void FillResponseOnStop(json::Dict& response, const json::Dict& map, const RequestHandler& handler) const;
-    void FillResponseOnMap(json::Dict& response, const RequestHandler& handler, const renderer::MapRenderer& renderer) const;
+    json::Node MakeResponseOnBus(int request_id, const json::Dict& map, const RequestHandler& handler) const;
+    json::Node MakeResponseOnStop(int request_id, const json::Dict& map, const RequestHandler& handler) const;
+    json::Node MakeResponseOnMap(int request_id, const RequestHandler& handler, const renderer::MapRenderer& renderer) const;
 };
