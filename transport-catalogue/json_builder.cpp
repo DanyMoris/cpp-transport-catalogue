@@ -14,7 +14,7 @@ namespace json {
         return nodes_stack_.back();
     }
 
-    DictKeyContext Builder::Key(std::string key) {
+    Builder::DictKeyContext Builder::Key(std::string key) {
         Node* current = GetCurrentNode();
 
         if (!current->IsDict()) {
@@ -57,7 +57,7 @@ namespace json {
         return *this;
     }
 
-    DictItemContext Builder::StartDict() {
+    Builder::DictItemContext Builder::StartDict() {
         Node* current = GetCurrentNode();
 
         if (current->IsDict()) {
@@ -85,7 +85,7 @@ namespace json {
         return DictItemContext(*this);
     }
 
-    ArrayItemContext Builder::StartArray() {
+    Builder::ArrayItemContext Builder::StartArray() {
         Node* current = GetCurrentNode();
 
         if (current->IsDict()) {
