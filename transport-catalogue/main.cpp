@@ -14,6 +14,7 @@ int main() {
 
     reader.LoadBaseRequests(catalogue);
     RequestHandler handler(catalogue);
+    reader.LoadTransportData(handler);
 
     renderer::MapRenderer renderer(reader.LoadRenderSettings());
 
