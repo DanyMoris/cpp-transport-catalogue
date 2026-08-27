@@ -1,32 +1,12 @@
-# Prerequisites
-*.d
+# 1. Ignore everything everywhere
+*
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# 2. Allow Git to look inside folders
+!*/
 
-# Precompiled Headers
-*.gch
-*.pch
+# 3. Explicitly whitelist only .cpp and .h files
+!*.cpp
+!*.h
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# 4. Keep the .gitignore file itself tracked
+!.gitignore

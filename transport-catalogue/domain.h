@@ -1,23 +1,25 @@
+#pragma once
+#include "geo.h"
+#include <string>
+#include <vector>
 
-#include "json_reader.h"
-#include "request_handler.h"
-#include "map_renderer.h"
-#include <iostream>
+namespace domain {
+	struct Stop {
+		std::string name;
+		geo::Coordinates coordinates;
+	};
 
-int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
+	struct Bus {
+		std::string id;
+		std::vector<const Stop*> route;
+		bool is_circle = false;
+	};
 
-    transport_catalogue::TransportCatalogue catalogue;
+	struct BusInfo {
+		size_t total_stops = 0;
+		size_t unique_stops = 0;
+		int route_length = 0;
+		double curvature = 0.0;
+	};
 
-    JsonReader reader(std::cin);
-
-    reader.LoadBaseRequests(catalogue);
-    RequestHandler handler(catalogue);
-
-    renderer::MapRenderer renderer(reader.LoadRenderSettings());
-
-    reader.ProcessStatRequests(handler, renderer, std::cout);
-
-    return 0;
 }

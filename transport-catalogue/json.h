@@ -23,6 +23,7 @@ namespace json {
         using variant::variant;
         using Value = variant;
 
+
         Node(Value val) : variant(std::move(val)) {}
 
         bool IsInt() const {
@@ -75,7 +76,7 @@ namespace json {
             }
             return std::get<Array>(*this);
         }
-        // НЕКОНСТАНТНАЯ версия для Builder
+
         Array& AsArray() {
             using namespace std::literals;
             if (!IsArray()) {
@@ -105,7 +106,7 @@ namespace json {
             }
             return std::get<Dict>(*this);
         }
-        // НЕКОНСТАНТНАЯ версия для Builder
+
         Dict& AsDict() {
             using namespace std::literals;
             if (!IsDict()) {
