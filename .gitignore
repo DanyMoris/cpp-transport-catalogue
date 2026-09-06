@@ -8,5 +8,6 @@
 !*.cpp
 !*.h
 
-# 4. Keep the .gitignore file itself tracked
+# 4. Keep repo metadata tracked
 !.gitignore
+!README.md
